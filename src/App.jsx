@@ -1,9 +1,11 @@
-import './App.css'
+import React from "react";
 
-export default function App() {
+const App = () => {
   return (
-    <main>
-     ha be bol
-    </main>
-  )
-}
+    <h1 className="text-3xl text-center font-bold text-white ">
+      Password Generator
+    </h1>
+  );
+};
+
+export default App;
