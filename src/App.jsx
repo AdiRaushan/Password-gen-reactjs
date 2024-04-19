@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState, useRef } from "react";
 
 const App = () => {
   const [length, setLenght] = useState(8);
@@ -7,13 +7,15 @@ const App = () => {
   const [password, setpassword] = useState("");
   //The useCallback Hook only runs when one of its dependencies update.
 
+  const passwordref = useRef(null);
+
   const passwordGen = useCallback(() => {
     let pass = " ";
     let str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     if (NumAllow) str += "0123456789";
     if (charAllow) str += "/.,:;][@#$%^&*";
 
-    for (i = 1; i <= length; i++) {
+    for (let i = 1; i <= length; i++) {
       let char = Math.floor(Math.random() * str.length + 1);
       pass += str.charAt(char);
     }
@@ -21,20 +23,33 @@ const App = () => {
     setpassword(pass);
   }, [length, NumAllow, charAllow, setpassword]);
 
+  const copyFn = useCallback(() => {
+    passwordref.current?.select();
+    window.navigator.clipboard.writeText(password);
+  }, [password]);
+
+  useEffect(() => {
+    passwordGen();
+  }, [NumAllow, charAllow, length, passwordGen]);
+
   console.log(length, NumAllow, charAllow);
 
   return (
     <>
-      <div className="w-full max-w-lg mx-auto shadow-md rounded-lg px-4 py-3 my-8 bg-gray-800 text-orange-500">
+      <div className="w-full max-w-lg mx-auto shadow-md rounded-lg px-4 py-3 my-8 bg-sky-900 text-green-200">
         <div className="flex shadow rounded-lg overflow-hidden mb-4">
           <input
             type="text"
             value={password}
-            className="outline-none w-full py-1 px-3"
+            className="outline-none w-full py-1 px-3 text-black"
             placeholder="Password Is In Making"
             readOnly
+            ref={passwordref}
           />
-          <button class="outline-none bg-blue-700 text-white px-3 py-0.5 shrink-0">
+          <button
+            onClick={copyFn}
+            class="outline-none bg-red-700 text-white px-3 py-0.5 shrink-0"
+          >
             Copy
           </button>
         </div>
@@ -61,7 +76,7 @@ const App = () => {
                 setNumAllow((prev) => !prev);
               }}
             />
-            <label>Number</label>
+            <label htmlFor="Number-input">Number</label>
           </div>
           <div className="flex items-center gap-x-1">
             <input
@@ -72,7 +87,7 @@ const App = () => {
                 setchar((prev) => !prev);
               }}
             />
-            <label>Special-Character</label>
+            <label htmlFor="character">Special-Character</label>
           </div>
         </div>
       </div>
